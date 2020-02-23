@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 void get_header(FILE *input, header_t *head) {
-    fscanf(input, "%c%i%i%i%i", &head->type_pnm, &head->type_pnm2, &head->width, &head->height, &head->deepth);
+    fscanf(input, "%c%i%i%i%i\n", &head->type_pnm, &head->type_pnm2, &head->width, &head->height, &head->deepth);
     printf("%c%i%i%i%i", head->type_pnm, head->type_pnm2, head->width, head->height, head->deepth);
 //    return READ_OK;
 }
@@ -35,33 +35,163 @@ void to_pnm_gray(FILE *output, pixel_t *write, header_t write_header) {
 
 void inverse_color(pixel_t *image, header_t *header) {
 //    pixel_t *inversed = malloc((header->width) * header->height * sizeof(pixel_t));
-    for (int i = 0; i < header->height*header->width; i++) {
-            pixel_t temp = image[i ];
-            temp.b = 255 - temp.b;
-            temp.g = 255 - temp.g;
-            temp.r = 255 - temp.r;
-            image[i] = temp;
-        }
+    for (int i = 0; i < header->height * header->width; i++) {
+        pixel_t temp = image[i];
+        temp.b = 255 - temp.b;
+        temp.g = 255 - temp.g;
+        temp.r = 255 - temp.r;
+        image[i] = temp;
+    }
 }
 
 void inverse_gray(unsigned char *image, header_t *header) {
-//    pixel_t *inversed = malloc((header->width) * header->height * sizeof(pixel_t));
-    for (int i = 0; i < header->height*header->width; i++) {
-        image[i] = 255 - image [i];
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = 255 - image[i];
     }
+}
+
+void mirror_horizontal_gray(unsigned char *image, header_t *header) {
+    unsigned char *mirror = (unsigned char *) malloc(header->width * header->height * sizeof(unsigned char));
+    if (!mirror) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->height; ++i) {
+        for (int j = 0; j < header->width; ++j) {
+            mirror[i * header->width + j] = image[i * header->width + header->width - j];
+        }
+    }
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = mirror[i];
+    }
+    free(mirror);
+}
+
+void mirror_horizontal(pixel_t *image, header_t *header) {
+    pixel_t *mirror = (pixel_t *) malloc(header->width * header->height * sizeof(pixel_t));
+    if (!mirror) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->height; ++i) {
+        for (int j = 0; j < header->width; ++j) {
+            mirror[i * header->width + j] = image[i * header->width + header->width - j];
+        }
+    }
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = mirror[i];
+    }
+    free(mirror);
+}
+
+void mirror_vertical_gray(unsigned char *image, header_t *header) {
+    unsigned char *mirror = (unsigned char *) malloc(header->width * header->height * sizeof(unsigned char));
+    if (!mirror) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->height; ++i) {
+        for (int j = 0; j < header->width; ++j) {
+            mirror[i * header->width + j] = image[(header->height - i) * header->width + j];
+        }
+    }
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = mirror[i];
+    }
+    free(mirror);
+}
+
+void mirror_vertical(pixel_t *image, header_t *header) {
+    pixel_t *mirror = (pixel_t *) malloc(header->width * header->height * sizeof(pixel_t));
+    if (!mirror) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->height; ++i) {
+        for (int j = 0; j < header->width; ++j) {
+            mirror[i * header->width + j] = image[(header->height - i) * header->width + j];
+        }
+    }
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = mirror[i];
+    }
+    free(mirror);
+}
+
+
+void rotate_left_90_gray(char *image, header_t *header) {
+    int a = header->width;
+    header->width = header->height;
+    header->height = a;
+    char *rotate = (char *) malloc((header->width) * header->height * sizeof(char));
+    if (!rotate) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->width; ++i) {
+        for (int j = 0; j < header->height; ++j) {
+            char temp = image[header->height * i + j];
+            rotate[(header->height - j - 1) * (header->width) + i] = temp;
+        }
+    }
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = rotate[i];
+    }
+    free(rotate);
 }
 
 void rotate_left_90(pixel_t *image, header_t *header) {
     int a = header->width;
     header->width = header->height;
     header->height = a;
-    pixel_t *rotate = malloc((header->width) * header->height * sizeof(pixel_t));
-
-    for (int i = 0; i < header->height; ++i) {
-        for (int j = 0; j < header->width; ++j) {
-            pixel_t temp = image[header->width * i + j];
-            rotate[abs(header->width) * (j + 1) - i - 1] = temp;
+    pixel_t *rotate = (pixel_t *) malloc((header->width) * header->height * sizeof(pixel_t));
+    if (!rotate) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->width; ++i) {
+        for (int j = 0; j < header->height; ++j) {
+            pixel_t temp = image[header->height * i + j];
+            rotate[(header->height - j - 1) * (header->width) + i] = temp;
         }
     }
-    image = rotate;
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = rotate[i];
+    }
+    free(rotate);
+}
+
+void rotate_right_90_gray(unsigned char *image, header_t *header) {
+    int a = header->width;
+    header->width = header->height;
+    header->height = a;
+    char *rotate = (char *) malloc((header->width) * header->height * sizeof(char));
+    if (!rotate) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->width; ++i) {
+        for (int j = 0; j < header->height; ++j) {
+            char temp = image[header->height * i + j];
+            rotate[j * (header->width) + header->width - i] = temp;
+//            rotate[(header->height - j - 1) * (header->width) + i] = temp;
+        }
+    }
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = rotate[i];
+    }
+    free(rotate);
+}
+
+void rotate_right_90(struct pixel_t *image, header_t *header) {
+    int a = header->width;
+    header->width = header->height;
+    header->height = a;
+    pixel_t *rotate = (pixel_t *) malloc((header->width) * header->height * sizeof(pixel_t));
+    if (!rotate) {
+        printf("Error: troubles with memory\n");
+    }
+    for (int i = 0; i < header->width; ++i) {
+        for (int j = 0; j < header->height; ++j) {
+            pixel_t temp = image[header->height * i + j];
+            rotate[j * (header->width) + header->width - i] = temp;
+        }
+    }
+    for (int i = 0; i < header->height * header->width; i++) {
+        image[i] = rotate[i];
+    }
+    free(rotate);
 }
