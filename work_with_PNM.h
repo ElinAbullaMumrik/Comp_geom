@@ -38,8 +38,16 @@ void from_pnm_color(FILE *input, pixel_t *read, header_t header);
 
 void get_header(FILE *input, header_t *head);
 
-void to_pnm(FILE *output, pixel_t *write, header_t write_header);
+void to_pnm_color(FILE *output, pixel_t *write, header_t write_header);
 
-pixel_t * rotate_left_90(pixel_t* image, header_t header);
+void to_pnm_gray(FILE *output, pixel_t *write, header_t write_header);
+
+void from_pnm_gray(FILE *input, pixel_t *read, header_t header);
+
+void inverse_color(pixel_t *image, header_t *header);
+
+void inverse_gray(unsigned char *image, header_t *header);
+
+void rotate_left_90(pixel_t *image, header_t *header);
 
 #endif //COMP_GEOM_WORK_WITH_PNM_H
