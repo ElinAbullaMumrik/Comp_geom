@@ -78,5 +78,6 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(outptr);
+    fclose(input);
     return 0;
 }
