@@ -13,7 +13,7 @@ typedef struct pixel_t {
 
 
 typedef struct header_t {
-    char type_pnm;
+    unsigned char type_pnm;
     int type_pnm2;
     int width;
     int height;
@@ -26,13 +26,13 @@ void get_header(FILE *input, header_t *head);
 
 void to_pnm_color(FILE *output, pixel_t *write, header_t write_header);
 
-void to_pnm_gray(FILE *output, pixel_t *write, header_t write_header);
+void to_pnm_gray(FILE *output, unsigned char *write, header_t write_header);
 
-void from_pnm_gray(FILE *input, pixel_t *read, header_t header);
+void from_pnm_gray(FILE *input, unsigned char *read, header_t header);
 
 void inverse_color(pixel_t *image, header_t *header);
 
-void rotate_left_90_gray(char *image, header_t *header);
+void rotate_left_90_gray(unsigned char *image, header_t *header);
 
 void mirror_horizontal(pixel_t *image, header_t *header);
 
