@@ -116,13 +116,16 @@ private:
         for (int x = (int) (point->x - radius) - 5;
              x <= (int) (point->x + radius + 1) + 5; x++) { // Find pixels in circle by searching in square
             for (int y = (int) (point->y - radius) - 5; y <= (int) (1 + point->y + radius) + 5; y++) {
-                double r = sqrt(pow(x - point->x, 2) + pow(y - point->y, 2));
-                if (r <= radius - sqrt(2) / 2.) {
-                    draw_point(x, y, koef, brightness, gamma_value);
-                } else if (r <= radius + 1) {
-                    draw_point(x, y, (-2. * r / (sqrt(2) + 2.) + 2. / (sqrt(2) + 2.) * (radius + 1.)) * koef,
-                               brightness,
-                               gamma_value);
+                if(x >= 0 && y >= 0 && x < this->width && y < this->height) {
+                    double r = sqrt(pow(x - point->x, 2) + pow(y - point->y, 2));
+                    if (r <= radius - sqrt(2) / 2.) {
+
+                        draw_point(x, y, koef, brightness, gamma_value);
+                    } else if (r <= radius + 1) {
+                        draw_point(x, y, (-2. * r / (sqrt(2) + 2.) + 2. / (sqrt(2) + 2.) * (radius + 1.)) * koef,
+                                   brightness,
+                                   gamma_value);
+                    }
                 }
             }
         }
@@ -147,7 +150,8 @@ public:
                 for (int x = (int) (i - thickness / 2.) - 5;
                      x <= (int) (i + thickness / 2. + 1) + 5; x++) { // Find pixels in circle by searching in square
                     for (int y = (int) (j - thickness / 2.) - 5; y <= (int) (1 + j + thickness / 2.) + 5; y++) {
-                        rline_points->insert(make_pair(x, y));
+                        if(x >= 0 && y >= 0 && x < this->width && y < this->height)
+                            rline_points->insert(make_pair(x, y));
                     }
                 }
                 i += grad;
@@ -163,8 +167,8 @@ public:
                 for (int y = (int) (i - thickness / 2.) - 5;
                      y <= (int) (i + thickness / 2. + 1) + 5; y++) { // Find pixels in circle by searching in square
                     for (int x = (int) (j - thickness / 2.) - 5; x <= (int) (1 + j + thickness / 2.) + 5; x++) {
-
-                        rline_points->insert(make_pair(x, y));
+                        if(x >= 0 && y >= 0 && x < this->width && y < this->height)
+                            rline_points->insert(make_pair(x, y));
                     }
                 }
                 i += grad;
