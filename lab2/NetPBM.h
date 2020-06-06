@@ -118,7 +118,7 @@ private:
             for (int y = (int) (point->y - radius) - 5; y <= (int) (1 + point->y + radius) + 5; y++) {
                 if(x >= 0 && y >= 0 && x < this->width && y < this->height) {
                     double r = sqrt(pow(x - point->x, 2) + pow(y - point->y, 2));
-                    if (r <= radius - sqrt(2) / 2.) {
+                    if (r <= radius - 0.5) {
 
                         draw_point(x, y, koef, brightness, gamma_value);
                     } else if (r <= radius + 1) {
@@ -144,12 +144,12 @@ public:
             if (point_2->x < point_1->x) {
                 swap(point_1, point_2);
             }
-            double grad = 5 * thickness / dx;
+            double grad = 3 * thickness / dx;
             for (double i = point_1->x; i <= point_2->x;) {
                 double j = (i - point_1->x) * (point_2->y - point_1->y) / (point_2->x - point_1->x) + point_1->y;
-                for (int x = (int) (i - thickness / 2.) - 5;
-                     x <= (int) (i + thickness / 2. + 1) + 5; x++) { // Find pixels in circle by searching in square
-                    for (int y = (int) (j - thickness / 2.) - 5; y <= (int) (1 + j + thickness / 2.) + 5; y++) {
+                for (int x = (int) (i - thickness / 2.) - 3;
+                     x <= (int) (i + thickness / 2. + 1) + 3; x++) { // Find pixels in circle by searching in square
+                    for (int y = (int) (j - thickness / 2.) - 3; y <= (int) (1 + j + thickness / 2.) + 3; y++) {
                         if(x >= 0 && y >= 0 && x < this->width && y < this->height)
                             rline_points->insert(make_pair(x, y));
                     }
@@ -161,12 +161,12 @@ public:
             if (point_2->y < point_1->y) {
                 swap(point_1, point_2);
             }
-            double grad = 5 * thickness / dy;
+            double grad = 3 * thickness / dy;
             for (double i = point_1->y; i <= point_2->y;) {
                 double j = (i - point_1->y) * (point_2->x - point_1->x) / (point_2->y - point_1->y) + point_1->x;
-                for (int y = (int) (i - thickness / 2.) - 5;
-                     y <= (int) (i + thickness / 2. + 1) + 5; y++) { // Find pixels in circle by searching in square
-                    for (int x = (int) (j - thickness / 2.) - 5; x <= (int) (1 + j + thickness / 2.) + 5; x++) {
+                for (int y = (int) (i - thickness / 2.) - 3;
+                     y <= (int) (i + thickness / 2. + 1) + 3; y++) { // Find pixels in circle by searching in square
+                    for (int x = (int) (j - thickness / 2.) - 3; x <= (int) (1 + j + thickness / 2.) + 5; x++) {
                         if(x >= 0 && y >= 0 && x < this->width && y < this->height)
                             rline_points->insert(make_pair(x, y));
                     }
@@ -180,19 +180,21 @@ public:
         } else {
             koef = 1;
         }
-        draw_circle(point_1, thickness/2., brightness, gamma_value, koef);
-        draw_circle(point_2, thickness/2., brightness, gamma_value, koef);
+//        draw_circle(point_1, thickness/2., brightness, gamma_value, koef);
+//        draw_circle(point_2, thickness/2., brightness, gamma_value, koef);
         for (pair<int, int> p : *rline_points) {
             int x = p.first;
             int y = p.second;
             double s = ((point_2->x - point_1->x)*((double )x - point_1->x)+(point_2->y - point_1->y)*((double )y - point_1->y))/sqrt(pow(point_1->x-point_2->x, 2)+pow(point_2->y-point_1->y, 2));
-            if (s <= sqrt(pow(point_1->x-point_2->x, 2)+pow(point_2->y-point_1->y, 2)) && s >= 0) {
+            if (s <= sqrt(pow(point_1->x-point_2->x, 2)+pow(point_2->y-point_1->y, 2))-0.5 && s >= 0) {
                 double r = sqrt(pow(x * (point_2->y - point_1->y) - y * (point_2->x - point_1->x) +
                                     point_2->x * point_1->y - point_2->y * point_1->x, 2) /
                                 (pow(point_2->y - point_1->y, 2) + pow(point_2->x - point_1->x, 2)));
-                if (r <= thickness / 2. - sqrt(2) / 2.) {
+                double alpha = atan2(abs(point_1->x-point_2->x),abs(point_1->y-point_2->y));
+
+                if (r <= thickness / 2. - sqrt(2)/2.*sin(3.14/4.+alpha)) {
                     draw_point(x, y, koef, brightness, gamma_value);
-                } else if (r <= thickness / 2. + 1) { // abs(thickness / 2. - sqrt(2) / 2. + r * (-0.5 - sqrt(2) / 2.))
+                } else if (r <= thickness / 2.+sqrt(2)/2.*sin(3.14/4.+alpha)) { // abs(thickness / 2. - sqrt(2) / 2. + r * (-0.5 - sqrt(2) / 2.))
                     draw_point(x, y, (-2. * r / (sqrt(2) + 2.) + 2. / (sqrt(2) + 2.) * (thickness / 2. + 1.)) * koef,
                                brightness,
                                gamma_value);
