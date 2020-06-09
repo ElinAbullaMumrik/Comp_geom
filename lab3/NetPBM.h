@@ -130,7 +130,8 @@ public:
             }
         }
     }
-    unsigned char findNearestPaletteColor (unsigned char color, int bitness){
+
+    unsigned char findNearestPaletteColor(unsigned char color, int bitness) {
         unsigned char tmp = color & (((1u << bitness) - 1) << (8 - bitness));
         color = 0;
         for (unsigned i = 0; i < 8 / bitness + 1; ++i) {
@@ -139,34 +140,45 @@ public:
         return color;
     }
 
-    void Ordered_dithering(double gamma_value, int bitness) {
-        float resizer = pow(2., (double)bitness)/255;
-        double bayerMatrix[8][8] = {
-                {0, 48, 12, 60, 3, 51, 15, 63},
-                {32, 16, 44, 28, 35, 19, 47, 31},
-                {8, 56, 4, 52, 11, 59, 7, 55},
-                {40, 24, 36, 20, 43, 27, 39, 23},
-                {2, 50, 14, 62, 1, 49, 13, 61},
-                {34, 18, 46, 30, 33, 17, 45, 29},
-                {10, 58, 6, 54, 9, 57, 5, 53},
-                {42, 26, 38, 22, 41, 25, 37, 21}
-        };
-
-        for (auto & i : bayerMatrix) {
-            for (double & j : i) {
-                j = j/64-0.5;
-            }
-        }
-        for (int i = 0; i<this->height; i++){
-            for (int j=0; j< this->width; j++){
-                int x = i%8;
-                int y = j%8;
-                unsigned char color = findNearestPaletteColor(this->array[i][j]+resizer*bayerMatrix[x][y], bitness);
+    void no_dithering(double gamma_value, int bitness) {
+        for (int i = 0; i < this->height; i++) {
+            for (int j = 0; j < this->width; j++) {
+                char color = findNearestPaletteColor(this->array[i][j], bitness);
                 draw_point(j, i, 1, color, gamma_value);
             }
         }
     }
 
+//    void no_dithering(double gamma_value, int bitness) {
+//    }
+
+    void ordered_dithering(double gamma_value, int bitness) {
+        float resizer = pow(2., (double) bitness) / 255;
+        double bayerMatrix[8][8] = {
+                {0,  48, 12, 60, 3,  51, 15, 63},
+                {32, 16, 44, 28, 35, 19, 47, 31},
+                {8,  56, 4,  52, 11, 59, 7,  55},
+                {40, 24, 36, 20, 43, 27, 39, 23},
+                {2,  50, 14, 62, 1,  49, 13, 61},
+                {34, 18, 46, 30, 33, 17, 45, 29},
+                {10, 58, 6,  54, 9,  57, 5,  53},
+                {42, 26, 38, 22, 41, 25, 37, 21}
+        };
+
+        for (auto &i : bayerMatrix) {
+            for (double &j : i) {
+                j = j / 64 - 0.5;
+            }
+        }
+        for (int i = 0; i < this->height; i++) {
+            for (int j = 0; j < this->width; j++) {
+                int x = i % 8;
+                int y = j % 8;
+                unsigned char color = findNearestPaletteColor(this->array[i][j] + resizer * bayerMatrix[x][y], bitness);
+                draw_point(j, i, 1, color, gamma_value);
+            }
+        }
+    }
 
 
     explicit
