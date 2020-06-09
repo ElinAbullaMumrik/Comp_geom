@@ -180,8 +180,8 @@ public:
         } else {
             koef = 1;
         }
-//        draw_circle(point_1, thickness/2., brightness, gamma_value, koef);
-//        draw_circle(point_2, thickness/2., brightness, gamma_value, koef);
+        draw_circle(point_1, thickness/2., brightness, gamma_value, koef);
+        draw_circle(point_2, thickness/2., brightness, gamma_value, koef);
         for (pair<int, int> p : *rline_points) {
             int x = p.first;
             int y = p.second;
@@ -219,6 +219,7 @@ public:
            *file) {
         this->file = file;
         this->read_header();
+        file->ignore(1);
         this->array = new unsigned char *[height];
         for (int i = 0; i < this->height; i++) {
             this->array[i] = new unsigned char[width];

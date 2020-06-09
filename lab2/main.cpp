@@ -35,12 +35,21 @@ int main(int argc, char **argv) {
         auto * file = new ifstream (infilename, std::ios::binary);
         (*file).unsetf(ios_base::skipws);
         if (!(*file).is_open()) {
+            delete file;
+            delete point_1;
+            delete point_2;
             throw logic_error("Can't open file to read");
         }
         auto *netPcm = new NetPBM(file);
         netPcm->draw_thick_line(point_1, point_2, line_width, brightness, gamma);
         auto* outfile = new ofstream (outfilename);
         if (!outfile->is_open()) {
+            file->close();
+            delete file;
+            delete outfile;
+            delete netPcm;
+            delete point_1;
+            delete point_2;
             throw logic_error("Can't open file to write");
         }
         netPcm->write_to_file(outfile);

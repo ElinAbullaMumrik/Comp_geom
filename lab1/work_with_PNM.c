@@ -7,7 +7,6 @@
 
 void get_header(FILE *input, header_t *head) {
     fscanf(input, "%c%i%i%i%i\n", &head->type_pnm, &head->type_pnm2, &head->width, &head->height, &head->deepth);
-    printf("%c%i%i%i%i", head->type_pnm, head->type_pnm2, head->width, head->height, head->deepth);
 //    return READ_OK;
 }
 
