@@ -246,6 +246,8 @@ public:
                         err[i + 1][j + 1] += error;
                 }
             }
+        for (int i = 0; i < height; i++)
+            delete[] err[i];
     }
 
     void jjn_dithering(int bitness) {
@@ -279,7 +281,8 @@ public:
                     if (j + 2 < this->width) err[i + 2][j + 2] += (error * 1);
                 }
             }
-
+        for (int i = 0; i < height; i++)
+            delete[] err[i];
     }
 
     void sierra_dithering(int bitness) {
@@ -311,6 +314,8 @@ public:
                     if (j + 1 < this->width) err[i + 2][j + 1] += (error * 2);
                 }
             }
+        for (int i = 0; i < height; i++)
+            delete[] err[i];
     }
 
     void atikson_dithering(int bitness) {
@@ -338,6 +343,8 @@ public:
                     err[i + 2][j] += error;
                 }
             }
+        for (int i = 0; i < height; i++)
+            delete[] err[i];
     }
 
     void halftone_dithering(int bitness) {
@@ -391,7 +398,7 @@ public:
         else {
             for (int i = 0; i < height; i++)
                 for (int j = 0; j < width; j++) {
-                    this->array[i][j] = (unsigned char) ((double)j * 256 / this->width);
+                    this->array[i][j] = (unsigned char) ((double) j * 256 / this->width);
                 }
         }
 
