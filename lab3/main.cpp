@@ -15,38 +15,59 @@ int main(int argc, char **argv) {
         }
         char *infilename = argv[1];
         char *outfilename = argv[2];
-
-        int gradient = atoi(argv[3]);
+        bool gradient = atoi(argv[3]);
         int dithering = atoi(argv[4]);
         int bitness = atoi(argv[5]);
         double gamma = atof(argv[6]);
         auto *file = new ifstream(infilename, std::ios::binary);
         (*file).unsetf(ios_base::skipws);
         if (!(*file).is_open()) {
+            delete file;
             throw logic_error("Can't open file to read");
         }
 
-        auto *netPcm = new NetPBM(file);
-
+        auto *netPcm = new NetPBM(file, gamma, gradient);
         switch (dithering) {
-            case 0: {
-                netPcm->no_dithering(gamma, bitness);
+            case 0:
+                netPcm->no_dithering(bitness);
                 break;
-            }
-            case 1: {
-                netPcm->ordered_dithering(gamma, bitness);
+
+            case 1:
+                netPcm->ordered_dithering(bitness);
                 break;
-            }
+
+            case 2:
+                netPcm->random_dithering(gamma, bitness);
+                break;
+
+            case 3:
+                netPcm->Floyd_Steinberg_dithering(bitness);
+                break;
+            case 4:
+                netPcm->jjn_dithering(bitness);
+                break;
+            case 5:
+                netPcm->sierra_dithering(bitness);
+                break;
+            case 6:
+                netPcm->atikson_dithering(bitness);
+                break;
+            case 7:
+                netPcm->halftone_dithering(bitness);
+                break;
 
         }
 
         auto *outfile = new ofstream(outfilename);
         if (!outfile->is_open()) {
+            file->close();
+            delete file;
+            delete outfile;
+            delete netPcm;
             throw logic_error("Can't open file to write");
         }
 
-
-        netPcm->write_to_file(outfile);
+        netPcm->write_to_file(outfile, gamma);
         outfile->close();
         file->close();
         delete file;
