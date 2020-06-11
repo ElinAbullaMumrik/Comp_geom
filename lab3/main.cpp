@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 
         }
 
-        auto *outfile = new ofstream(outfilename);
+        auto *outfile = new ofstream(outfilename, std::ios::binary);
         if (!outfile->is_open()) {
             file->close();
             delete file;
