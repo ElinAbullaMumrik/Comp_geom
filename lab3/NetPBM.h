@@ -135,8 +135,8 @@ public:
 
 
     void write_to_file(ofstream *outfile, double gamma_value) {
-        *outfile << "P5" << " " << width << " " << height << " " << depth
-                 << " ";
+        *outfile << "P5" << (unsigned char)(10) << width << " " << height << (unsigned char)(10) << depth
+                 << (unsigned char)(10);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 double value;
