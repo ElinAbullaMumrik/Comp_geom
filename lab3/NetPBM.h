@@ -232,7 +232,12 @@ public:
         }
         for (int i = 0; i < this->height; i++)
             for (int j = 0; j < this->width; j++) {
-                this->array[i][j] = (unsigned char) ((double) this->array[i][j] + err[i][j]);
+                double tmp = (double) this->array[i][j] + err[i][j];
+                if (tmp > 255)
+                    tmp = 255;
+                if (tmp < 0)
+                    tmp = 0;
+                this->array[i][j] = (unsigned char) tmp;
                 unsigned char nc = findNearestPaletteColor(this->array[i][j], bitness);
                 double error = (this->array[i][j] - nc) / 16.0;
                 this->array[i][j] = nc;
@@ -260,7 +265,12 @@ public:
         }
         for (int i = 0; i < this->height; i++)
             for (int j = 0; j < this->width; j++) {
-                this->array[i][j] = (unsigned char) ((double) this->array[i][j] + err[i][j]);
+                double tmp = (double) this->array[i][j] + err[i][j];
+                if (tmp > 255)
+                    tmp = 255;
+                if (tmp < 0)
+                    tmp = 0;
+                this->array[i][j] = (unsigned char) tmp;
                 unsigned char nc = findNearestPaletteColor(this->array[i][j], bitness);
                 double error = (this->array[i][j] - nc) / 48.0;
                 this->array[i][j] = nc;
@@ -295,7 +305,12 @@ public:
         }
         for (int i = 0; i < this->height; i++)
             for (int j = 0; j < this->width; j++) {
-                this->array[i][j] = (unsigned char) ((double) this->array[i][j] + err[i][j]);
+                double tmp = (double) this->array[i][j] + err[i][j];
+                if (tmp > 255)
+                    tmp = 255;
+                if (tmp < 0)
+                    tmp = 0;
+                this->array[i][j] = (unsigned char) tmp;
                 unsigned char nc = findNearestPaletteColor(this->array[i][j], bitness);
                 double error = (this->array[i][j] - nc) / 32.0;
                 this->array[i][j] = nc;
@@ -328,7 +343,12 @@ public:
         }
         for (int i = 0; i < this->height; i++)
             for (int j = 0; j < this->width; j++) {
-                this->array[i][j] = (unsigned char) ((double) this->array[i][j] + err[i][j]);
+                double tmp = (double) this->array[i][j] + err[i][j];
+                if (tmp > 255)
+                    tmp = 255;
+                if (tmp < 0)
+                    tmp = 0;
+                this->array[i][j] = (unsigned char) tmp;
                 unsigned char nc = findNearestPaletteColor(this->array[i][j], bitness);
                 double error = (this->array[i][j] - nc) / 8.0;
                 this->array[i][j] = nc;
