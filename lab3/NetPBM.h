@@ -154,13 +154,16 @@ public:
     }
 
     unsigned char findNearestPaletteColor(unsigned char color, int bitness) {
-        unsigned char tmp;
-        tmp = color & (((1u << bitness) - 1) << (8 - bitness));
-        color = 0;
-        for (unsigned i = 0; i < 8 / bitness + 1; ++i) {
-            color = color | ((unsigned char) (tmp >> bitness * i));
+        if (bitness!=8){
+            unsigned char tmp;
+            tmp = color & (((1u << bitness) - 1) << (8 - bitness));
+            color = 0;
+            for (unsigned i = 0; i < 8 / bitness + 1; ++i) {
+                color = color | ((unsigned char) (tmp >> bitness * i));
+            }
+            return color;
         }
-        return color;
+
     }
 
     void no_dithering(int bitness) {
