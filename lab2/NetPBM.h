@@ -54,8 +54,8 @@ private:
     void read_data() {
         for (int i = 0; i < this->height; i++) {
             for (int j = 0; j < this->width; j++) {
-                array[i][j] = 0;
-//                *this->file >> this->array[i][j];
+//                array[i][j] = 0;
+                *this->file >> this->array[i][j];
             }
         }
     }
