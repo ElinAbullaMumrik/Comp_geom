@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
         }
         auto *netPcm = new NetPBM(file);
         netPcm->draw_thick_line(point_1, point_2, line_width, brightness, gamma);
-        auto* outfile = new ofstream (outfilename);
+        auto* outfile = new ofstream (outfilename, std::ios::binary);
         if (!outfile->is_open()) {
             file->close();
             delete file;

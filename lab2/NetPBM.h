@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <set>
+
 #ifndef LAB2KGIG_NETPBM_H
 #define LAB2KGIG_NETPBM_H
 
@@ -15,6 +16,7 @@ struct point_t {
     double x;
     double y;
 };
+
 class NetPBM {
 private:
     ifstream *file;
@@ -52,7 +54,8 @@ private:
     void read_data() {
         for (int i = 0; i < this->height; i++) {
             for (int j = 0; j < this->width; j++) {
-                *this->file >> this->array[i][j];
+                array[i][j] = 0;
+//                *this->file >> this->array[i][j];
             }
         }
     }
@@ -85,6 +88,7 @@ private:
     void draw_point(int x, int y, double brightness, int color, double gamma_value) {
         if (!(x < width && y < height && x >= 0 && y >= 0 && color >= 0 && color <= depth))
             throw invalid_argument("Invalid argument");
+
         double value = ((double) this->array[y][x]) / this->depth;
         double color_value = ((double) color) / (double) depth;
         if (gamma_value == -1) {
@@ -102,43 +106,60 @@ private:
         }
         if (value >= 1 - 1 / 1e9)
             value = 1;
-        this->array[y][x] = (unsigned char) round(this->depth * value);
+        int temp = round(this->depth * value);
+        if (temp > 255)
+            temp = 255;
+        this->array[y][x] = (unsigned char) temp;
     }
 
     static void swap(point_t *a, point_t *b) {
-        auto * buf = new point_t;
+        auto *buf = new point_t;
         *buf = *a;
         *a = *b;
         *b = *buf;
         delete buf;
     }
-    void draw_circle(point_t* point, double radius, int brightness, double gamma_value, double koef) {
-        for (int x = (int) (point->x - radius) - 5;
-             x <= (int) (point->x + radius + 1) + 5; x++) { // Find pixels in circle by searching in square
-            for (int y = (int) (point->y - radius) - 5; y <= (int) (1 + point->y + radius) + 5; y++) {
-                if(x >= 0 && y >= 0 && x < this->width && y < this->height) {
-                    double r = sqrt(pow(x - point->x, 2) + pow(y - point->y, 2));
-                    if (r <= radius - 0.5) {
-
-                        draw_point(x, y, koef, brightness, gamma_value);
-                    } else if (r <= radius + 1) {
-                        draw_point(x, y, (-2. * r / (sqrt(2) + 2.) + 2. / (sqrt(2) + 2.) * (radius + 1.)) * koef,
-                                   brightness,
-                                   gamma_value);
-                    }
-                }
-            }
-        }
-    }
+//    void draw_circle(point_t* point, double radius, int brightness, double gamma_value, double koef) {
+//        for (int x = (int) (point->x - radius) - 5;
+//             x <= (int) (point->x + radius + 1) + 5; x++) { // Find pixels in circle by searching in square
+//            for (int y = (int) (point->y - radius) - 5; y <= (int) (1 + point->y + radius) + 5; y++) {
+//                if(x >= 0 && y >= 0 && x < this->width && y < this->height) {
+//                    double r = sqrt(pow(x - point->x, 2) + pow(y - point->y, 2));
+//                    if (r <= radius - 0.5) {
+//
+//                        draw_point(x, y, koef, brightness, gamma_value);
+//                    } else if (r <= radius + 1) {
+//                        draw_point(x, y, (-2. * r / (sqrt(2) + 2.) + 2. / (sqrt(2) + 2.) * (radius + 1.)) * koef,
+//                                   brightness,
+//                                   gamma_value);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 public:
     int16_t getType() const {
         return type;
     }
 
+    void draw_thik_line(point_t *point_1, point_t *point_2, double thickness, int brightness, double gamma_value) {
+        double dy = abs(point_2->y - point_1->y);
+        double dx = abs(point_2->x - point_1->x);
+        double tan = dy / dx;
+    }
+
+    double perp_point_y (double x1, double y1, double x2, double y2, double x){
+        return (-(x2-x1)/(y2-y1)*x+(y1+y2)/2+(x2-x1)/(y2-y1)*(x1+x2)/2);
+    }
+    double dist(double x1, double y1, double x2, double y2, double x, double y) {
+        return abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1) /
+        (sqrt(pow((y2 - y1), 2) + pow((x2 - x1), 2)));
+    }
+
     void draw_thick_line(point_t *point_1, point_t *point_2, double thickness, int brightness, double gamma_value) {
         double dy = abs(point_2->y - point_1->y);
-        auto* rline_points = new set<pair<int, int>>;
+        auto *rline_points = new set<pair<int, int>>;
         double dx = abs(point_2->x - point_1->x);
         if (dx != 0) {
             if (point_2->x < point_1->x) {
@@ -150,7 +171,7 @@ public:
                 for (int x = (int) (i - thickness / 2.) - 3;
                      x <= (int) (i + thickness / 2. + 1) + 3; x++) { // Find pixels in circle by searching in square
                     for (int y = (int) (j - thickness / 2.) - 3; y <= (int) (1 + j + thickness / 2.) + 3; y++) {
-                        if(x >= 0 && y >= 0 && x < this->width && y < this->height)
+                        if (x >= 0 && y >= 0 && x < this->width && y < this->height)
                             rline_points->insert(make_pair(x, y));
                     }
                 }
@@ -167,7 +188,7 @@ public:
                 for (int y = (int) (i - thickness / 2.) - 3;
                      y <= (int) (i + thickness / 2. + 1) + 3; y++) { // Find pixels in circle by searching in square
                     for (int x = (int) (j - thickness / 2.) - 3; x <= (int) (1 + j + thickness / 2.) + 5; x++) {
-                        if(x >= 0 && y >= 0 && x < this->width && y < this->height)
+                        if (x >= 0 && y >= 0 && x < this->width && y < this->height)
                             rline_points->insert(make_pair(x, y));
                     }
                 }
@@ -180,27 +201,30 @@ public:
         } else {
             koef = 1;
         }
-        draw_circle(point_1, thickness/2., brightness, gamma_value, koef);
-        draw_circle(point_2, thickness/2., brightness, gamma_value, koef);
+        double line_length = (sqrt(pow((point_2->y - point_1->y), 2) + pow((point_2->x- point_1->x), 2)));
+        double y_perp_0 = perp_point_y(point_1->x, point_1->y, point_2->x, point_2->y, 0);
+        double y_perp_1 = perp_point_y(point_1->x, point_1->y, point_2->x, point_2->y, 1);
         for (pair<int, int> p : *rline_points) {
+            int color = 0;
             int x = p.first;
             int y = p.second;
-            double s = ((point_2->x - point_1->x)*((double )x - point_1->x)+(point_2->y - point_1->y)*((double )y - point_1->y))/sqrt(pow(point_1->x-point_2->x, 2)+pow(point_2->y-point_1->y, 2));
-            if (s <= sqrt(pow(point_1->x-point_2->x, 2)+pow(point_2->y-point_1->y, 2))-0.5 && s >= 0) {
-                double r = sqrt(pow(x * (point_2->y - point_1->y) - y * (point_2->x - point_1->x) +
-                                    point_2->x * point_1->y - point_2->y * point_1->x, 2) /
-                                (pow(point_2->y - point_1->y, 2) + pow(point_2->x - point_1->x, 2)));
-                double alpha = atan2(abs(point_1->x-point_2->x),abs(point_1->y-point_2->y));
+                for (int i = 0; i < 16; i++) {
+                    for (int j = 0; j < 16; j++) {
+                        double x_choord = (double) x + ((double) i) / 16. - 0.5 + 1 / 32.;
+                        double y_choord = (double) y + ((double) j) / 16. - 0.5 + 1 / 32.;
+                        double s = dist(point_1->x, point_1->y, point_2->x, point_2->y, x_choord, y_choord);
+                        double r = dist (0, y_perp_0, 1, y_perp_1, x_choord, y_choord);
+                        if (s < thickness / 2.&&r<line_length/2.)
+                            color++;
 
-                if (r <= thickness / 2. - sqrt(2)/2.*sin(3.14/4.+alpha)) {
-                    draw_point(x, y, koef, brightness, gamma_value);
-                } else if (r <= thickness / 2.+sqrt(2)/2.*sin(3.14/4.+alpha)) { // abs(thickness / 2. - sqrt(2) / 2. + r * (-0.5 - sqrt(2) / 2.))
-                    draw_point(x, y, (-2. * r / (sqrt(2) + 2.) + 2. / (sqrt(2) + 2.) * (thickness / 2. + 1.)) * koef,
-                               brightness,
-                               gamma_value);
+                    }
                 }
+                if (color > 255)
+                    color = 255;
+                draw_point(x, y, brightness / 255., color, gamma_value);
             }
-        }
+
+//        }
         delete rline_points;
     }
 
