@@ -51,11 +51,16 @@ private:
         }
     }
 
-    void read_data(double gamma_value) {
+    void read_data(double gamma_value, bool gradient) {
         for (int i = 0; i < this->height; i++) {
             for (int j = 0; j < this->width; j++) {
                 unsigned char tmp;
-                *this->file >> tmp;
+                if (!gradient)
+                    *this->file >> tmp;
+
+                else {
+                    tmp = (unsigned char) ((double) j * 256 / this->width);
+                }
 
                 double value = ((double) tmp) / this->depth;
                 if (gamma_value == 0) {
@@ -93,41 +98,6 @@ private:
         return pow(u, gamma);
     }
 
-//    unsigned char read_point(int x, int y, double gamma_value) {
-//        if (!(x < width && y < height && x >= 0 && y >= 0))
-//            throw invalid_argument("Invalid argument");
-//        double value = ((double) this->array[y][x]) / this->depth;
-//        if (gamma_value == 0) {
-//            value = ungammasRGB(value);
-//        } else {
-//            value = ungamma(value, gamma_value);
-//        }
-//        return (unsigned char) round(this->depth * value);
-//    }
-//
-//    void draw_point(int x, int y, unsigned char color, double gamma_value) {
-//        if (!(x < width && y < height && x >= 0 && y >= 0 && color >= 0 && color <= depth))
-//            throw invalid_argument("Invalid argument");
-//        double value;
-//        double color_value = color / 255;
-//        if (gamma_value == 0) {
-//            value = gammasRGB(color_value);
-//        } else {
-//            value = gamma(color_value, gamma_value);
-//        }
-//        if (value >= 1 - 1 / 1e9)
-//            value = 1;
-//        this->array[y][x] = (unsigned char) round(this->depth * value);
-//    }
-//
-//    static void swap(point_t *a, point_t *b) {
-//        auto *buf = new point_t;
-//        *buf = *a;
-//        *a = *b;
-//        *b = *buf;
-//        delete buf;
-//    }
-
 public:
     int16_t getType() const {
         return type;
@@ -135,8 +105,8 @@ public:
 
 
     void write_to_file(ofstream *outfile, double gamma_value) {
-        *outfile << "P5" << (unsigned char)(10) << width << " " << height << (unsigned char)(10) << depth
-                 << (unsigned char)(10);
+        *outfile << "P5" << (unsigned char) (10) << width << " " << height << (unsigned char) (10) << depth
+                 << (unsigned char) (10);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 double value;
@@ -154,7 +124,7 @@ public:
     }
 
     unsigned char findNearestPaletteColor(unsigned char color, int bitness) {
-        if (bitness!=8){
+        if (bitness != 8) {
             unsigned char tmp;
             tmp = color & (((1u << bitness) - 1) << (8 - bitness));
             color = 0;
@@ -441,14 +411,7 @@ public:
                 i++) {
             this->array[i] = new unsigned char[width];
         }
-        if (!gradient)
-            read_data(gamma);
-        else {
-            for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++) {
-                    this->array[i][j] = (unsigned char) ((double) j * 256 / this->width);
-                }
-        }
+        read_data(gamma, gradient);
 
     }
 

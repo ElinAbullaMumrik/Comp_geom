@@ -119,24 +119,6 @@ private:
         *b = *buf;
         delete buf;
     }
-//    void draw_circle(point_t* point, double radius, int brightness, double gamma_value, double koef) {
-//        for (int x = (int) (point->x - radius) - 5;
-//             x <= (int) (point->x + radius + 1) + 5; x++) { // Find pixels in circle by searching in square
-//            for (int y = (int) (point->y - radius) - 5; y <= (int) (1 + point->y + radius) + 5; y++) {
-//                if(x >= 0 && y >= 0 && x < this->width && y < this->height) {
-//                    double r = sqrt(pow(x - point->x, 2) + pow(y - point->y, 2));
-//                    if (r <= radius - 0.5) {
-//
-//                        draw_point(x, y, koef, brightness, gamma_value);
-//                    } else if (r <= radius + 1) {
-//                        draw_point(x, y, (-2. * r / (sqrt(2) + 2.) + 2. / (sqrt(2) + 2.) * (radius + 1.)) * koef,
-//                                   brightness,
-//                                   gamma_value);
-//                    }
-//                }
-//            }
-//        }
-//    }
 
 public:
     int16_t getType() const {
