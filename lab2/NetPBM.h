@@ -85,20 +85,21 @@ private:
         return pow(u, gamma);
     }
 
-    void draw_point(int x, int y, double brightness, int color, double gamma_value) {
-        if (!(x < width && y < height && x >= 0 && y >= 0 && color >= 0 && color <= depth))
+    void draw_point(int x, int y, double pixel_color, int brightness, double gamma_value) {
+        double brightness_value = ((double) brightness) / (double) depth;
+
+        if (!(x < width && y < height && x >= 0 && y >= 0 && brightness >= 0 && brightness <= depth))
             throw invalid_argument("Invalid argument");
 
         double value = ((double) this->array[y][x]) / this->depth;
-        double color_value = ((double) color) / (double) depth;
         if (gamma_value == -1) {
-            value = ungammasRGB(value);
-            color_value = ungammasRGB(color_value);
+//            value = ungammasRGB(value);
+            brightness_value = ungammasRGB(brightness_value);
         } else {
-            value = ungamma(value, gamma_value);
-            color_value = ungamma(color_value, gamma_value);
+//            value = ungamma(value, gamma_value);
+            brightness_value = ungamma(brightness_value, gamma_value);
         }
-        value = value + brightness * (color_value - value);
+        value = value + pixel_color * (brightness_value - value);
         if (gamma_value == -1) {
             value = gammasRGB(value);
         } else {
@@ -125,18 +126,17 @@ public:
         return type;
     }
 
-    void draw_thik_line(point_t *point_1, point_t *point_2, double thickness, int brightness, double gamma_value) {
-        double dy = abs(point_2->y - point_1->y);
-        double dx = abs(point_2->x - point_1->x);
-        double tan = dy / dx;
+    double perp_point_y(double x1, double y1, double x2, double y2, double x) {
+        return (-(x2 - x1) / (y2 - y1) * x + (y1 + y2) / 2 + (x2 - x1) / (y2 - y1) * (x1 + x2) / 2);
     }
 
-    double perp_point_y (double x1, double y1, double x2, double y2, double x){
-        return (-(x2-x1)/(y2-y1)*x+(y1+y2)/2+(x2-x1)/(y2-y1)*(x1+x2)/2);
+    double perp_point_x(double x1, double y1, double x2, double y2, double y) {
+        return (-(y2 - y1) / (x2 - x1) * y + (x1 + x2) / 2 + (y2 - y1) / (x2 - x1) * (y1 + y2) / 2);
     }
+
     double dist(double x1, double y1, double x2, double y2, double x, double y) {
         return abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1) /
-        (sqrt(pow((y2 - y1), 2) + pow((x2 - x1), 2)));
+               (sqrt(pow((y2 - y1), 2) + pow((x2 - x1), 2)));
     }
 
     void draw_thick_line(point_t *point_1, point_t *point_2, double thickness, int brightness, double gamma_value) {
@@ -178,33 +178,40 @@ public:
             }
         }
         double koef;
-        if (thickness < 1) {
-            koef = thickness;
+        double y_perp_0, y_perp_1, x_perp_0, x_perp_1;
+        if (dy != 0) {
+            y_perp_0 = perp_point_y(point_1->x, point_1->y, point_2->x, point_2->y, 0);
+            y_perp_1 = perp_point_y(point_1->x, point_1->y, point_2->x, point_2->y, 1);
         } else {
-            koef = 1;
+            x_perp_0 = perp_point_x(point_1->x, point_1->y, point_2->x, point_2->y, 0);
+            x_perp_1 = perp_point_x(point_1->x, point_1->y, point_2->x, point_2->y, 1);
+
         }
-        double line_length = (sqrt(pow((point_2->y - point_1->y), 2) + pow((point_2->x- point_1->x), 2)));
-        double y_perp_0 = perp_point_y(point_1->x, point_1->y, point_2->x, point_2->y, 0);
-        double y_perp_1 = perp_point_y(point_1->x, point_1->y, point_2->x, point_2->y, 1);
+        double line_length = (sqrt(pow((point_2->y - point_1->y), 2) + pow((point_2->x - point_1->x), 2)));
+
         for (pair<int, int> p : *rline_points) {
             int color = 0;
             int x = p.first;
             int y = p.second;
-                for (int i = 0; i < 16; i++) {
-                    for (int j = 0; j < 16; j++) {
-                        double x_choord = (double) x + ((double) i) / 16. - 0.5 + 1 / 32.;
-                        double y_choord = (double) y + ((double) j) / 16. - 0.5 + 1 / 32.;
-                        double s = dist(point_1->x, point_1->y, point_2->x, point_2->y, x_choord, y_choord);
-                        double r = dist (0, y_perp_0, 1, y_perp_1, x_choord, y_choord);
-                        if (s < thickness / 2.&&r<line_length/2.)
-                            color++;
+            for (int i = 0; i < 16; i++) {
+                for (int j = 0; j < 16; j++) {
+                    double x_choord = (double) x + ((double) i) / 16. - 0.5 + 1 / 32.;
+                    double y_choord = (double) y + ((double) j) / 16. - 0.5 + 1 / 32.;
+                    double s = dist(point_1->x, point_1->y, point_2->x, point_2->y, x_choord, y_choord);
+                    double r;
+                    if (dy != 0)
+                        r = dist(0, y_perp_0, 1, y_perp_1, x_choord, y_choord);
+                    else
+                        r = dist(x_perp_1, 1, x_perp_0, 0, x_choord, y_choord);
+                    if (s < thickness / 2. && r < line_length / 2.)
+                        color++;
 
-                    }
                 }
-                if (color > 255)
-                    color = 255;
-                draw_point(x, y, brightness / 255., color, gamma_value);
             }
+            if (color > 255)
+                color = 255;
+            draw_point(x, y, color / 255., brightness, gamma_value);
+        }
 
 //        }
         delete rline_points;
