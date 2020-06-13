@@ -372,7 +372,7 @@ public:
             };
             for (auto &i : halftoneMatrix) {
                 for (double &j : i) {
-                    j = j / 16. - 0.5;
+                    j = j / 17. - 0.5;
                 }
             }
             double resizer = this->depth / (pow(2., (double) bitness) - 1);
