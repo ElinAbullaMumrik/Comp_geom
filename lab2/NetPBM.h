@@ -195,8 +195,8 @@ public:
             int y = p.second;
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
-                    double x_choord = (double) x + ((double) i) / 16. - 0.5 + 1 / 32.;
-                    double y_choord = (double) y + ((double) j) / 16. - 0.5 + 1 / 32.;
+                    double x_choord = (double) x + ((double) i) / 16. + 1 / 32.;
+                    double y_choord = (double) y + ((double) j) / 16. + 1 / 32.;
                     double s = dist(point_1->x, point_1->y, point_2->x, point_2->y, x_choord, y_choord);
                     double r;
                     if (dy != 0)
