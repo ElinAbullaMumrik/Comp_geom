@@ -93,10 +93,10 @@ private:
 
         double value = ((double) this->array[y][x]) / this->depth;
         if (gamma_value == -1) {
-//            value = ungammasRGB(value);
+            value = ungammasRGB(value);
             brightness_value = ungammasRGB(brightness_value);
         } else {
-//            value = ungamma(value, gamma_value);
+            value = ungamma(value, gamma_value);
             brightness_value = ungamma(brightness_value, gamma_value);
         }
         value = value + pixel_color * (brightness_value - value);
