@@ -3,7 +3,7 @@
 #include <set>
 #include "PPM.h"
 #include "PBM.h"
-
+#include "NetPBM.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
         if (argc == 666) {
             throw logic_error("Invalid user");
         }
-        if (argc != 7) {
+        if (argc != 4) {
             throw logic_error("Invalid argument count");
         }
         char *infilename = argv[1];
@@ -25,38 +25,57 @@ int main(int argc, char **argv) {
             throw logic_error("Can't open file to read");
         }
         unsigned char buf;
-        file >> buf;
+        *file >> buf;
         if (buf != 'P') {
             throw logic_error("Bad file");
         }
-        file >> buf;
+        *file >> buf;
         if (buf == '1' || buf == '2' || buf == '3' || buf == '4' || buf == '7') {
             throw logic_error("Not supported type of NetPCM");
-        } else if (buf != '5'|| buf != '6')
+        } else if (buf != '5'&& buf != '6'){
             throw logic_error("Bad file");
         }
-        if (buf == 5) {
-            auto *picture = new PBM(file);
+        NetPBM* picture;
+        if (buf == '5') {
+            picture = new PBM(file);
         }
-        if (buf == 6){
-            auto *PPM = new PPM(file);
+        if (buf == '6'){
+            picture = new PPM(file);
         }
+        switch (conversion) {
+            case 0:
+                picture->inversion();
+                break;
+            case 1:
+                picture->horizontal_mirror();
+                break;
+            case 2:
+                picture->vertical_mirror();
+                break;
+            case 3:
+                picture->rotate_90(true);
+                break;
+            case 4:
+                picture->rotate_90(false);
+                break;
+        }
+
 
         auto *outfile = new ofstream(outfilename);
         if (!outfile->is_open()) {
             file->close();
             delete file;
             delete outfile;
-            delete netPcm;
+            delete picture;
             throw logic_error("Can't open file to write");
         }
 
-        netPcm->write_to_file(outfile, gamma);
+        picture->write_to_file(outfile);
         outfile->close();
         file->close();
         delete file;
         delete outfile;
-        delete netPcm;
+        delete picture;
         return 0;
     }
     catch (const logic_error &error) {

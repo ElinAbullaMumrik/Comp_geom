@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(lab4)
-
-set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+project(lab1v2)
 
 set(CMAKE_CXX_STANDARD 14)
 
