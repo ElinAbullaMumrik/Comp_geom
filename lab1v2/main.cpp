@@ -5,6 +5,9 @@
 #include "PBM.h"
 #include "NetPBM.h"
 
+
+
+
 using namespace std;
 
 int main(int argc, char **argv) {
@@ -32,14 +35,14 @@ int main(int argc, char **argv) {
         *file >> buf;
         if (buf == '1' || buf == '2' || buf == '3' || buf == '4' || buf == '7') {
             throw logic_error("Not supported type of NetPCM");
-        } else if (buf != '5'&& buf != '6'){
+        } else if (buf != '5' && buf != '6') {
             throw logic_error("Bad file");
         }
-        NetPBM* picture;
+        NetPBM *picture;
         if (buf == '5') {
             picture = new PBM(file);
         }
-        if (buf == '6'){
+        if (buf == '6') {
             picture = new PPM(file);
         }
         switch (conversion) {
@@ -61,7 +64,7 @@ int main(int argc, char **argv) {
         }
 
 
-        auto *outfile = new ofstream(outfilename);
+        auto *outfile = new ofstream(outfilename, std::ios::binary);
         if (!outfile->is_open()) {
             file->close();
             delete file;
