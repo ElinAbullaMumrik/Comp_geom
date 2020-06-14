@@ -12,9 +12,9 @@ class fromRGBtoCMY : public Converter {
         int R = pixel.R;
         int G = pixel.G;
         int B = pixel.B;
-        pixel.R = (unsigned char) (round((1 - (double) R / 255. * 255)));
-        pixel.G = (unsigned char) (round((1 - (double) G / 255. * 255)));
-        pixel.B = (unsigned char) (round((1 - (double) B / 255. * 255)));
+        pixel.R = (unsigned char) (round(((1 - (double) R / 255.) * 255)));
+        pixel.G = (unsigned char) (round(((1 - (double) G / 255.) * 255)));
+        pixel.B = (unsigned char) (round(((1 - (double) B / 255.) * 255)));
 
         return pixel;
     }
