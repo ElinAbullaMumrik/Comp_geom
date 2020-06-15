@@ -60,7 +60,6 @@ private:
         }
     }
 
-// xth? f rf
     static double gammasRGB(double u) {
         if (u <= 0.0031308) {
             return 323 * u / 25.;
