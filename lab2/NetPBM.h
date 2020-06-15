@@ -60,7 +60,7 @@ private:
         }
     }
 
-// https://en.wikipedia.org/wiki/SRGB#The_sRGB_transfer_function_(%22gamma%22)
+// xth? f rf
     static double gammasRGB(double u) {
         if (u <= 0.0031308) {
             return 323 * u / 25.;
