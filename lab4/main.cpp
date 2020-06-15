@@ -85,10 +85,10 @@ char **parse_format(char *inp) {
         }
         answer[l][lastdot] = '_';
         answer[l][lastdot + 1] = '1' + l;
-        for (int i = lastdot; i < count_symbols + 2; i++) {
+        for (int i = lastdot; i < count_symbols; i++) {
             answer[l][i + 2] = inp[i];
         }
-        answer[l][count_symbols + 3] = 0;
+        answer[l][count_symbols + 2] = 0;
     }
     return answer;
 }

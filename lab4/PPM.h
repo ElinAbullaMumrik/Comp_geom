@@ -22,7 +22,6 @@ private:
     ifstream *file2;
     ifstream *file3;
     int count;
-    uint16_t type = -1;
     uint16_t width = -1;
     uint16_t height = -1;
     uint16_t depth = -1;
@@ -38,8 +37,7 @@ private:
             *this->file >> buf;
             if (buf == '1' || buf == '2' || buf == '3' || buf == '4' || buf == '5' || buf == '7') {
                 throw logic_error("Not supported type of NetPCM");
-            } else if (buf == '6')
-                this->type = 6;
+            } else if (buf == '6');
             else {
                 throw logic_error("Bad file");
             }
@@ -61,8 +59,7 @@ private:
             *this->file1 >> buf;
             if (buf == '1' || buf == '2' || buf == '3' || buf == '4' || buf == '6' || buf == '7') {
                 throw logic_error("Not supported type of NetPCM");
-            } else if (buf == '5')
-                this->type = 5;
+            } else if (buf == '5');
             else {
                 throw logic_error("Bad file");
             }
@@ -84,8 +81,7 @@ private:
             *this->file2 >> buf;
             if (buf == '1' || buf == '2' || buf == '3' || buf == '4' || buf == '6' || buf == '7') {
                 throw logic_error("Not supported type of NetPCM");
-            } else if (buf == '5')
-                this->type = 5;
+            } else if (buf == '5');
             else {
                 throw logic_error("Bad file");
             }
@@ -106,8 +102,7 @@ private:
             *this->file3 >> buf;
             if (buf == '1' || buf == '2' || buf == '3' || buf == '4' || buf == '6' || buf == '7') {
                 throw logic_error("Not supported type of NetPCM");
-            } else if (buf == '5')
-                this->type = 5;
+            } else if (buf == '5');
             else {
                 throw logic_error("Bad file");
             }
